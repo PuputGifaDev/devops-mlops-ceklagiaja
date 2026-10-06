@@ -1,11 +1,12 @@
-# DevOps-MLOps-CekLagiAja
+# Sistem Inspeksi Bangunan
 
 ## Deskripsi
 
-Project ini merupakan implementasi pipeline DevOps dan MLOps untuk
-aplikasi machine learning "CekLagiAja". Tujuannya membangun alur
-kerja otomatis mulai dari pengembangan, testing, deployment, hingga
-monitoring model ML.
+Project ini merupakan aplikasi web berbasis **PHP Native** untuk melakukan
+inspeksi bangunan. Sistem ini membantu inspektor mencatat kondisi bangunan,
+mendokumentasikan temuan kerusakan, menghasilkan laporan inspeksi, dan
+memantau riwayat inspeksi secara digital — menggantikan proses manual
+berbasis kertas.
 
 ## Anggota Kelompok
 
@@ -16,35 +17,27 @@ monitoring model ML.
 
 ## Tujuan Project
 
-Membangun sistem machine learning yang:
-- Reproducible (hasil bisa direplikasi)
-- Scalable (mudah dikembangkan)
-- Automated (CI/CD berjalan otomatis)
-- Monitored (performa model terpantau)
+Membangun sistem inspeksi bangunan yang:
+- **Digital** — menggantikan form inspeksi berbasis kertas
+- **Terstruktur** — data inspeksi tersimpan rapi di database
+- **Terdokumentasi** — foto & catatan temuan kerusakan tersimpan
+- **Mudah dilaporkan** — generate laporan inspeksi otomatis
 
 ## Fitur Awal
 
-- Struktur repository terorganisir
-- Dokumentasi project terpusat
-- Pipeline CI/CD dasar
-- Placeholder untuk source code aplikasi ML
+- Manajemen data bangunan (CRUD)
+- Form inspeksi bangunan
+- Upload foto temuan kerusakan
+- Kategorisasi tingkat kerusakan (ringan/sedang/berat)
+- Riwayat inspeksi per bangunan
+- Generate laporan inspeksi (PDF/print)
 
 ## Technology Stack
 
+- **Backend:** PHP Native (minimal PHP 8.0)
+- **Database:** MySQL / MariaDB
+- **Frontend:** HTML, CSS, JavaScript (vanilla)
+- **Web Server:** Apache (XAMPP/Laragon) atau Nginx
 - **Version Control:** Git & GitHub
-- **CI/CD:** GitHub Actions
-- **Containerization:** Docker
-- **ML Framework:** (TBD)
-- **Deployment:** (TBD)
-- **Monitoring:** (TBD)
 
-## Project Roadmap
-
-- [x] Membuat repository
-- [x] Membuat README
-- [ ] Setup struktur folder
-- [ ] Menambahkan source code
-- [ ] Setup CI/CD pipeline
-- [ ] Containerization
-- [ ] Deployment
-- [ ] Monitoring
+## Struktur Folder
