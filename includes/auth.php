@@ -8,10 +8,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+/** Cek apakah user sudah login. */
 function is_logged_in(): bool {
     return isset($_SESSION['user_id'], $_SESSION['role']);
 }
 
+/** Ambil data user dari session. */
 function current_user(): ?array {
     if (!is_logged_in()) return null;
     return [
@@ -22,13 +24,16 @@ function current_user(): ?array {
     ];
 }
 
+/** Paksa login, jika belum arahkan ke halaman login. */
 function require_login(): void {
     if (!is_logged_in()) {
         flash('error', 'Silakan login terlebih dahulu.');
-        redirect('login.php');
+        // Diubah ke /login.php agar konsisten
+        redirect('/login.php');
     }
 }
 
+/** Paksa role tertentu, jika tidak sesuai tendang dengan error 403. */
 function require_role(string ...$roles): void {
     require_login();
     if (!in_array($_SESSION['role'], $roles, true)) {
@@ -37,6 +42,11 @@ function require_role(string ...$roles): void {
     }
 }
 
+/** 
+ * Cek kepemilikan data inspeksi.
+ * - Admin: bebas mengakses semua ID.
+ * - User: hanya bisa mengakses ID yang ditugaskan kepadanya.
+ */
 function require_inspection_ownership(PDO $pdo, int $inspectionId): array {
     require_login();
     $uid  = (int)$_SESSION['user_id'];
@@ -59,8 +69,17 @@ function require_inspection_ownership(PDO $pdo, int $inspectionId): array {
     return $row;
 }
 
-function log_activity(PDO $pdo, string $action, ?string $entityType = null,
-                      ?int $entityId = null, ?string $description = null): void {
+/** 
+ * Catat aktivitas ke database.
+ * Wajib dipanggil di setiap aksi penting (create, update, delete, login, dll).
+ */
+function log_activity(
+    PDO $pdo, 
+    string $action, 
+    ?string $entityType = null,
+    ?int $entityId = null, 
+    ?string $description = null
+): void {
     try {
         $pdo->prepare(
             'INSERT INTO activity_logs (user_id, action, entity_type, entity_id, description, ip_address)
@@ -74,6 +93,7 @@ function log_activity(PDO $pdo, string $action, ?string $entityType = null,
             'ip'     => $_SERVER['REMOTE_ADDR'] ?? null,
         ]);
     } catch (Throwable $e) {
+        // Jangan sampai error log mengganggu proses utama aplikasi
         error_log('[LOG ERROR] ' . $e->getMessage());
     }
 }
