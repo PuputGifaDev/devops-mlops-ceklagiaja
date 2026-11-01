@@ -1,10 +1,15 @@
 <?php
 declare(strict_types=1);
+
+// Pastikan hanya admin yang bisa memuat file ini
+require_once __DIR__ . '/auth.php';
+require_role('admin');
+
 $u = current_user();
 ?>
 <aside class="sidebar" id="appSidebar">
     <div class="sidebar-brand">
-        <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="Logo" width="32" height="32">
+        <img src="<?= BASE_URL ?>/assets/img/logo.png" alt="Logo" width="32" height="32" onerror="this.style.display='none'">
         <span><?= e(APP_SHORT) ?></span>
     </div>
 
@@ -43,10 +48,15 @@ $u = current_user();
     </nav>
 
     <div class="sidebar-user">
-        <div class="avatar"><?= e(initials($u['name'] ?? '?')) ?></div>
-        <div class="meta">
-            <small><?= e($u['name'] ?? '') ?></small>
-            <span class="badge bg-primary">Admin</span>
+        <div class="user-info">
+            <div class="avatar"><?= e(initials($u['name'] ?? '?')) ?></div>
+            <div class="meta">
+                <small class="text-truncate d-block" style="max-width:120px;"><?= e($u['name'] ?? '') ?></small>
+                <span class="badge bg-primary mt-1">Admin</span>
+            </div>
         </div>
+        <a href="<?= BASE_URL ?>/logout.php" class="logout-btn" title="Keluar">
+            <i class="fa-solid fa-power-off"></i>
+        </a>
     </div>
 </aside>

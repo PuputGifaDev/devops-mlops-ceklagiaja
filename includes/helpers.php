@@ -1,12 +1,14 @@
 <?php
 declare(strict_types=1);
 
+/** Escape HTML output. */
 function e(mixed $v): string {
     return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** Format tanggal Indonesia. */
 function format_tanggal(?string $date, string $fmt = 'd M Y'): string {
-    if (!$date) return '-';
+    if (!$date || $date === '0000-00-00') return '-';
     try {
         $d = new DateTime($date);
     } catch (Exception) {
@@ -20,11 +22,29 @@ function format_tanggal(?string $date, string $fmt = 'd M Y'): string {
     ]);
 }
 
+/** Format tanggal + waktu. */
+function format_datetime(?string $datetime): string {
+    if (!$datetime) return '-';
+    try {
+        $dt = new DateTime($datetime);
+        return strtr($dt->format('d M Y, H:i'), ['May'=>'Mei','Aug'=>'Agu','Oct'=>'Okt','Dec'=>'Des']);
+    } catch (Exception) {
+        return '-';
+    }
+}
+
+/** Redirect ke path relatif terhadap BASE_URL. */
 function redirect(string $path): never {
-    header('Location: ' . BASE_URL . '/' . ltrim($path, '/'));
+    // Jika $path sudah mengandung http (misal redirect ke luar), jangan ditambah BASE_URL
+    if (str_starts_with($path, 'http')) {
+        header('Location: ' . $path);
+    } else {
+        header('Location: ' . BASE_URL . '/' . ltrim($path, '/'));
+    }
     exit;
 }
 
+/** Set atau ambil flash message. */
 function flash(string $key, ?string $value = null): ?string {
     if ($value !== null) {
         $_SESSION["flash_$key"] = $value;
@@ -35,11 +55,13 @@ function flash(string $key, ?string $value = null): ?string {
     return $v;
 }
 
+/** Tandai menu aktif berdasarkan segmen URL. */
 function is_active_menu(string $needle): string {
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     return str_contains($uri, $needle) ? ' active' : '';
 }
 
+/** Ambil inisial nama (misal: "Budi Santoso" -> "BS"). */
 function initials(string $name): string {
     $parts = preg_split('/\s+/', trim($name));
     $a = mb_substr($parts[0] ?? '', 0, 1);
@@ -47,6 +69,49 @@ function initials(string $name): string {
     return mb_strtoupper($a . $b);
 }
 
+/** Label status inspeksi. */
+function status_label(string $status): string {
+    return match ($status) {
+        'scheduled'      => 'Dijadwalkan',
+        'in_progress'    => 'Sedang Dikerjakan',
+        'pending_review' => 'Menunggu Review',
+        'revision'       => 'Perlu Revisi',
+        'approved'       => 'Disetujui',
+        'cancelled'      => 'Dibatalkan',
+        default          => ucfirst($status),
+    };
+}
+
+/** Badge Bootstrap untuk status inspeksi. */
+function status_badge(string $status): string {
+    $color = match ($status) {
+        'scheduled'      => 'secondary',
+        'in_progress'    => 'info',
+        'pending_review' => 'warning',
+        'revision'       => 'danger',
+        'approved'       => 'success',
+        'cancelled'      => 'dark',
+        default          => 'light',
+    };
+    return '<span class="badge bg-' . $color . '">' . e(status_label($status)) . '</span>';
+}
+
+/** Badge untuk status tindak lanjut temuan. */
+function followup_badge(string $status): string {
+    $map = [
+        'open'           => ['warning', 'Terbuka'],
+        'in_progress'    => ['info', 'Diproses'],
+        'completed'      => ['success', 'Selesai'],
+        'not_actionable' => ['secondary', 'Tidak Dapat Ditindaklanjuti'],
+    ];
+    [$color, $label] = $map[$status] ?? ['light', $status];
+    return '<span class="badge bg-' . $color . '">' . e($label) . '</span>';
+}
+
+/** 
+ * Upload gambar dengan aman.
+ * Mengembalikan nama file yang disimpan (string) atau null jika gagal.
+ */
 function safe_upload_image(array $file, ?string &$error = null): ?string {
     $error = null;
 
@@ -64,7 +129,8 @@ function safe_upload_image(array $file, ?string &$error = null): ?string {
     $mime  = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
 
-    if (!isset(ALLOWED_MIME[$mime])) {
+    // PERBAIKAN: Gunakan in_array() karena ALLOWED_MIME adalah array list, bukan associative
+    if (!in_array($mime, ALLOWED_MIME, true)) {
         $error = 'Format file harus JPEG, PNG, atau WebP.';
         return null;
     }
@@ -77,7 +143,15 @@ function safe_upload_image(array $file, ?string &$error = null): ?string {
         }
     }
 
-    $stored = bin2hex(random_bytes(16)) . '.' . ALLOWED_MIME[$mime];
+    // Tentukan ekstensi berdasarkan MIME
+    $extMap = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp'
+    ];
+    $ext = $extMap[$mime] ?? 'jpg';
+
+    $stored = bin2hex(random_bytes(16)) . '.' . $ext;
     $target = rtrim(UPLOAD_DIR, '/\\') . DIRECTORY_SEPARATOR . $stored;
 
     if (!move_uploaded_file($file['tmp_name'], $target)) {
