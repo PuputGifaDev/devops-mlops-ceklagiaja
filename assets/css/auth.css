@@ -1,63 +1,49 @@
-.auth-page {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: radial-gradient(1200px 600px at 10% 0%, #1e3a8a 0%, #0f172a 55%);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    padding: 1rem;
+/* =========================================
+   LOGIN / AUTH PAGE
+   ========================================= */
+body.login-page {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.auth-card {
-    background: #fff;
-    padding: 2.5rem 2rem;
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.login-box .card {
+    border: none;
     border-radius: 16px;
-    width: min(420px, 100%);
-    box-shadow: 0 24px 64px rgba(0,0,0,.35);
-    animation: authPop .4s ease;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
 }
-@keyframes authPop {
-    from { transform: translateY(12px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-}
-.auth-logo {
-    width: 64px;
-    height: 64px;
-    display: block;
-    margin: 0 auto 1rem;
-    border-radius: 12px;
-    background: #f1f5f9;
-    padding: 6px;
-}
-.auth-title {
-    font-size: 1.2rem;
+
+.login-box .card-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem 1.5rem 1rem;
     text-align: center;
-    color: #0f172a;
-    font-weight: 700;
-    margin-bottom: .25rem;
 }
-.auth-subtitle {
-    text-align: center;
-    color: #64748b;
-    font-size: .85rem;
-    margin-bottom: 1.5rem;
+
+.login-box .card-header h1 {
+    color: var(--primary-color);
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
-.auth-page .form-control {
-    padding: .7rem .9rem;
-    border-radius: 8px;
+
+.login-box .card-body {
+    padding: 2rem 1.5rem;
 }
-.auth-page .btn-primary {
-    padding: .7rem;
-    border-radius: 8px;
-    font-weight: 600;
-    background: #2563eb;
-    border-color: #2563eb;
+
+.login-box .form-control {
+    background-color: #f8fafc;
 }
-.auth-page .btn-primary:hover {
-    background: #1d4ed8;
-    border-color: #1d4ed8;
-}
-.auth-footer {
-    text-align: center;
-    margin-top: 1.25rem;
-    font-size: .75rem;
-    color: #94a3b8;
+
+.login-box .form-control:focus {
+    background-color: #ffffff;
 }

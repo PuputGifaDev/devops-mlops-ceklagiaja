@@ -1,21 +1,32 @@
 <?php
-declare(strict_types=1);
+/**
+ * config/database.php
+ * Koneksi database menggunakan PDO
+ */
 
-$host   = getenv('DB_HOST') ?: 'localhost';
-$dbname = getenv('DB_NAME') ?: 'inspeksi_bangunan';
-$user   = getenv('DB_USER') ?: 'root';
-$pass   = getenv('DB_PASS') ?: '';
+require_once __DIR__ . '/config.php';
+
+$host     = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname   = $_ENV['DB_NAME'] ?? 'inspeksi_bangunan';
+$username = $_ENV['DB_USER'] ?? 'root';
+$password = $_ENV['DB_PASS'] ?? '';
 
 $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
 
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
 try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]);
+    $pdo = new PDO($dsn, $username, $password, $options);
 } catch (PDOException $e) {
-    error_log('[DB ERROR] ' . $e->getMessage());
-    http_response_code(500);
-    exit('Koneksi database gagal. Hubungi administrator.');
+    // Jangan tampilkan pesan error asli di production
+    if ($_ENV['APP_ENV'] === 'local') {
+        die('Koneksi Database Gagal: ' . $e->getMessage());
+    } else {
+        die('Terjadi kesalahan sistem. Silakan hubungi administrator.');
+    }
 }
+?>

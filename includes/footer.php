@@ -1,23 +1,21 @@
-<?php declare(strict_types=1); ?>
-</div><!-- /.app-layout -->
+            </div> <!-- End .container-fluid -->
+        </div> <!-- End .app-content -->
+    </main>
+</div> <!-- End .app-wrapper -->
 
-<div class="sidebar-backdrop"></div>
+<!-- Core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@4.10.0/dist/js/adminlte.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/app.js"></script>
-<?php if (!empty($extraScripts)): foreach ($extraScripts as $src): ?>
-<script src="<?= e($src) ?>"></script>
-<?php endforeach; endif; ?>
+<!-- Custom JS Global -->
+<script src="<?= BASE_URL ?>assets/js/app.js"></script>
 
-<?php if ($m = flash('success')): ?>
-    <div class="app-toast alert alert-success alert-dismissible-auto" role="alert">
-        <i class="fa-solid fa-circle-check me-2"></i><?= e($m) ?>
-    </div>
+<!-- Page Specific JS -->
+<?php if (isset($pageScript)): ?>
+    <?php foreach ((array)$pageScript as $script): ?>
+        <script src="<?= BASE_URL ?>assets/js/<?= $script ?>"></script>
+    <?php endforeach; ?>
 <?php endif; ?>
-<?php if ($m = flash('error')): ?>
-    <div class="app-toast alert alert-danger alert-dismissible-auto" role="alert">
-        <i class="fa-solid fa-circle-exclamation me-2"></i><?= e($m) ?>
-    </div>
-<?php endif; ?>
+
 </body>
 </html>

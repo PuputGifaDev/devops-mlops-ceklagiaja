@@ -1,39 +1,80 @@
+/* =========================================
+   PRINT STYLES (KHUSUS UNTUK CETAK LAPORAN)
+   ========================================= */
+
 @media print {
-    @page { size: A4; margin: 15mm; }
-    html, body { background: #fff !important; color: #000 !important; font-size: 11pt; }
-
-    .sidebar,
-    .sidebar-backdrop,
-    .app-header,
-    .btn,
-    .no-print,
-    nav,
-    footer,
-    .app-toast { display: none !important; }
-
-    .app-layout { display: block; }
-    .app-content { padding: 0 !important; max-width: none; }
-
-    .card-clean {
-        border: 1px solid #ccc !important;
-        box-shadow: none !important;
-        page-break-inside: avoid;
+    /* 1. Reset dasar untuk cetak */
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+        font-family: 'Times New Roman', Times, serif; /* Font formal untuk dokumen resmi */
+        margin: 0;
+        padding: 0;
     }
-    .card-clean .card-clean-header,
-    .card-clean .card-clean-body { padding: .5rem .75rem !important; }
 
-    .table-clean th {
-        background: #f1f5f9 !important;
-        color: #000 !important;
-        -webkit-print-color-adjust: exact;
+    /* 2. Sembunyikan elemen yang tidak perlu dicetak */
+    .no-print, 
+    .app-header, 
+    .app-sidebar, 
+    .app-footer, 
+    .btn, 
+    .navbar,
+    .card-header {
+        display: none !important;
+    }
+
+    /* 3. Pastikan container mengambil seluruh lebar kertas */
+    .print-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Pengaturan Tabel agar rapi dan tidak terpotong */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid; /* Mencegah baris tabel terbelah di tengah halaman */
+        page-break-after: auto;
+    }
+
+    th, td {
+        border: 1px solid #000000 !important;
+        padding: 6px 8px !important;
+        color: #000000 !important;
+    }
+
+    th {
+        background-color: #e2e8f0 !important; /* Warna abu-abu terang */
+        -webkit-print-color-adjust: exact; /* Memaksa browser mencetak warna background */
         print-color-adjust: exact;
     }
-    .table-clean td, .table-clean th {
-        border: 1px solid #cbd5e1 !important;
-    }
-    .table-clean { page-break-inside: auto; }
-    .table-clean tr { page-break-inside: avoid; }
 
-    a[href]::after { content: ""; }
-    a { color: #000 !important; text-decoration: none !important; }
+    /* 5. Pengaturan Halaman Kertas (A4) */
+    @page {
+        size: A4 portrait;
+        margin: 1.5cm;
+    }
+
+    /* 6. Menghindari elemen terpotong di tengah halaman */
+    .card, .print-section {
+        page-break-inside: avoid;
+    }
+
+    /* 7. Tanda Tangan */
+    .signature-box {
+        page-break-inside: avoid;
+    }
+
+    /* 8. Sembunyikan link URL di belakang teks */
+    a[href]:after {
+        content: none !important;
+    }
 }

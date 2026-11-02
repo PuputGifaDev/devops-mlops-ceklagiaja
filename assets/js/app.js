@@ -1,50 +1,52 @@
-(function () {
-  'use strict';
+/**
+ * app.js
+ * Core JavaScript untuk Sistem Informasi Inspeksi Bangunan
+ */
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const sidebar  = document.querySelector('.sidebar');
-    const backdrop = document.querySelector('.sidebar-backdrop');
+document.addEventListener('DOMContentLoaded', function () {
+    
+    // 1. Animasi Auto-hide untuk Flash Message (Alert)
+    const alerts = document.querySelectorAll('.alert-dismissible');
+    alerts.forEach(function (alert) {
+        setTimeout(function () {
+            // Gunakan Bootstrap Alert API untuk menutup dengan animasi fade
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000); // Tertutup otomatis setelah 5 detik
+    });
 
-    function closeSidebar() {
-      sidebar?.classList.remove('show');
-      backdrop?.classList.remove('show');
+    // 2. Inisialisasi Tooltips Bootstrap (Jika ada elemen dengan data-bs-toggle="tooltip")
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // 3. Konfirmasi Aksi Hapus/Nonaktifkan
+    const deleteButtons = document.querySelectorAll('.btn-confirm-delete');
+    deleteButtons.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const message = this.getAttribute('data-message') || 'Apakah Anda yakin ingin memproses data ini?';
+            const form = this.closest('form');
+            
+            if (confirm(message)) {
+                if (form) {
+                    form.submit();
+                } else {
+                    window.location.href = this.getAttribute('href');
+                }
+            }
+        });
+    });
+
+    // 4. Efek Transisi Sidebar di Mobile
+    const sidebarToggle = document.querySelector('[data-lte-toggle="sidebar"]');
+    const sidebar = document.querySelector('.app-sidebar');
+    
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function() {
+            // Menambahkan kelas animasi CSS kustom (lihat app.css)
+            sidebar.classList.toggle('sidebar-animating');
+        });
     }
-    function openSidebar() {
-      sidebar?.classList.add('show');
-      backdrop?.classList.add('show');
-    }
-
-    document.querySelectorAll('[data-toggle-sidebar]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (sidebar?.classList.contains('show')) closeSidebar();
-        else openSidebar();
-      });
-    });
-    backdrop?.addEventListener('click', closeSidebar);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeSidebar();
-    });
-    window.addEventListener('resize', function () {
-      if (window.innerWidth >= 992) closeSidebar();
-    });
-
-    document.querySelectorAll('.alert-dismissible-auto').forEach(function (el) {
-      setTimeout(function () {
-        el.style.transition = 'opacity .4s ease, transform .4s ease';
-        el.style.opacity = '0';
-        el.style.transform = 'translateX(120%)';
-        setTimeout(function () { el.remove(); }, 400);
-      }, 4000);
-    });
-
-    document.querySelectorAll('[data-confirm]').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        const msg = el.getAttribute('data-confirm') || 'Yakin melanjutkan?';
-        if (!window.confirm(msg)) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-        }
-      });
-    });
-  });
-})();
+});

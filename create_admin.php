@@ -1,41 +1,34 @@
 <?php
-declare(strict_types=1);
 require_once __DIR__ . '/config/app.php';
-require_once __DIR__ . '/config/database.php';
 
-$isCli   = PHP_SAPI === 'cli';
-$isLocal = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
-
-if (!$isCli && !$isLocal) {
-    http_response_code(403);
-    exit('Akses ditolak. Jalankan dari lokal/CLI saja.');
-}
-
-$count = (int)$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
-if ($count > 0) {
-    exit('Akun sudah ada (jumlah: ' . $count . '). '
-        . 'Hapus file create_admin.php dari server sekarang.');
-}
-
-$name     = 'Administrator';
+// Kredensial admin default (UBAH SEBELUM JALANKAN JIKA PERLU)
+$name = 'Administrator';
 $username = 'admin';
-$email    = 'admin@example.com';
-$password = 'GantiPassword-Kuat-2026';
+$email = 'admin@example.com';
+$password = 'Admin123!'; // Gunakan password yang kuat
 
 $hash = password_hash($password, PASSWORD_DEFAULT);
 
-$stmt = $pdo->prepare(
-    'INSERT INTO users (name, username, email, password_hash, role)
-     VALUES (:n, :u, :e, :p, "admin")'
-);
-$stmt->execute([
-    'n' => $name,
-    'u' => $username,
-    'e' => $email,
-    'p' => $hash,
-]);
+try {
+    // Cek apakah username sudah ada
+    $check = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+    $check->execute([$username]);
+    
+    if ($check->fetch()) {
+        die("Akun admin sudah ada. Silakan hapus file ini.");
+    }
 
-echo "✅ Akun Admin berhasil dibuat.\n\n";
-echo "Username : {$username}\n";
-echo "Password : {$password}\n\n";
-echo "⚠️  HAPUS file create_admin.php SEKARANG dan ganti password.\n";
+    // Simpan ke database
+    $stmt = $pdo->prepare("INSERT INTO users (name, username, email, password_hash, role, is_active) VALUES (?, ?, ?, ?, 'admin', 1)");
+    $stmt->execute([$name, $username, $email, $hash]);
+    
+    echo "<h1>Akun Admin Berhasil Dibuat!</h1>";
+    echo "<p>Username: <b>{$username}</b></p>";
+    echo "<p>Password: <b>{$password}</b></p>";
+    echo "<p style='color:red; font-weight:bold;'>SEGERA HAPUS FILE create_admin.php INI!</p>";
+    echo "<a href='login.php'>Klik di sini untuk Login</a>";
+    
+} catch (PDOException $e) {
+    die("Gagal membuat akun admin: " . $e->getMessage());
+}
+?>
